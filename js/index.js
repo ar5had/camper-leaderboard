@@ -1,11 +1,5 @@
 "use strict";
 
-// Board
-// ----> Table
-// --------> CategoryRow
-// ------------> Row
-// --------> DataRows
-// ------------> Row
 var Board = React.createClass({
   displayName: "Board",
 
@@ -15,8 +9,8 @@ var Board = React.createClass({
       { className: "container board" },
       React.createElement(
         "h3",
-        { className: "heading" },
-        "FCC Leaderboard"
+        { className: "heading text-center" },
+        "freeCodeCamp Leaderboard"
       ),
       React.createElement(Table, null)
     );
@@ -30,7 +24,6 @@ var Table = React.createClass({
     return React.createElement(
       "div",
       { className: "mainTable" },
-      React.createElement(CategoryRow, null),
       React.createElement(DataRows, null)
     );
   }
@@ -69,6 +62,11 @@ var DataRows = React.createClass({
   componentDidMount: function componentDidMount() {
     this.getData();
   },
+  updateState: function updateState(e) {
+    $(".active").removeClass("active");
+    this.setState({ show: e.target.dataset.value });
+    if (e.target.dataset.value === "recent") $(".recentPoints").addClass("active");else if (e.target.dataset.value === "alltime") $(".allTimePoints").addClass("active");
+  },
   render: function render() {
     var rows = [];
     if (this.state.show === "recent") {
@@ -85,6 +83,7 @@ var DataRows = React.createClass({
     return React.createElement(
       "div",
       { className: "dataRows" },
+      React.createElement(CategoryRow, { updateState: this.updateState }),
       rows
     );
   }
@@ -95,7 +94,7 @@ var CategoryRow = React.createClass({
 
   render: function render() {
     return React.createElement(Row, { index: "#", name: "Camper", lastMonthPoints: "Recent points",
-      totalPoints: "Total points", type: "category", imgLink: "" });
+      totalPoints: "Total points", type: "category", imgLink: "", changeState: this.props.updateState });
   }
 });
 
@@ -120,7 +119,7 @@ var Row = React.createClass({
       ),
       React.createElement(
         "div",
-        { className: this.getClasses("col-xs-5") },
+        { className: this.getClasses("col-xs-5 campers") },
         React.createElement(
           "p",
           null,
@@ -134,19 +133,19 @@ var Row = React.createClass({
       ),
       React.createElement(
         "div",
-        { className: this.getClasses("col-xs-3") },
+        { className: this.getClasses("col-xs-3 recentPoints"), "data-value": "recent", onClick: this.props.changeState },
         React.createElement(
           "p",
-          null,
+          { "data-value": "recent" },
           this.props.lastMonthPoints
         )
       ),
       React.createElement(
         "div",
-        { className: this.getClasses("col-xs-3") },
+        { className: this.getClasses("col-xs-3 allTimePoints active"), "data-value": "alltime", onClick: this.props.changeState },
         React.createElement(
           "p",
-          null,
+          { "data-value": "alltime" },
           this.props.totalPoints
         )
       )

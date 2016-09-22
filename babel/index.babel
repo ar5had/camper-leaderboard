@@ -1,14 +1,9 @@
-// Board
-// ----> Table
-// --------> CategoryRow
-// ------------> Row
-// --------> DataRows
-// ------------> Row
+
 var Board = React.createClass({
   render: function() {
     return (
       <div className="container board">
-        <h3 className="heading">FCC Leaderboard</h3>
+        <h3 className="heading text-center">freeCodeCamp Leaderboard</h3>
         <Table />
       </div>
     );
@@ -19,7 +14,6 @@ var Table = React.createClass({
   render: function() {
     return (
       <div className="mainTable">
-        <CategoryRow />
         <DataRows />
       </div>
     );
@@ -57,21 +51,30 @@ var DataRows = React.createClass({
   componentDidMount: function() {
     this.getData();
   },
+  updateState: function(e) {
+    $(".active").removeClass("active");
+    this.setState({show: e.target.dataset.value});
+    if (e.target.dataset.value === "recent")
+      $(".recentPoints").addClass("active");
+    else if (e.target.dataset.value === "alltime")
+      $(".allTimePoints").addClass("active");
+  },
   render: function() {
     var rows = [];
     if (this.state.show === "recent") {
       this.state.recentList.forEach(function(elem, i){
         rows.push(<Row index={i + 1} name={elem.username} lastMonthPoints={elem.recent}
-        totalPoints={elem.alltime} imgLink={elem.img} type="dataRow"/>);
+        totalPoints={elem.alltime} imgLink={elem.img} type="dataRow" />);
       });  
     } else {
       this.state.allTimeList.forEach(function(elem, i){
         rows.push(<Row index={i + 1} name={elem.username} lastMonthPoints={elem.recent}
-        totalPoints={elem.alltime} imgLink={elem.img} type="dataRow"/>);
+        totalPoints={elem.alltime} imgLink={elem.img} type="dataRow" />);
       });  
     }
-    return (
+    return (    
       <div className="dataRows"> 
+        <CategoryRow updateState={this.updateState}/> 
         {rows}
       </div>
     );
@@ -82,7 +85,7 @@ var CategoryRow = React.createClass({
   render: function() {
     return (
       <Row index="#" name="Camper" lastMonthPoints="Recent points"
-        totalPoints="Total points" type="category" imgLink=""/>
+        totalPoints="Total points" type="category" imgLink="" changeState={this.props.updateState} />
     );
   }
 });
@@ -97,7 +100,7 @@ var Row = React.createClass({
           <div className={this.getClasses("col-xs-1")}>
             <p>{this.props.index}</p>
           </div>
-          <div className={this.getClasses("col-xs-5")}>
+          <div className={this.getClasses("col-xs-5 campers")}>
             <p>
               <span>
                 <img src={this.props.imgLink} className="userImg"/>
@@ -105,11 +108,11 @@ var Row = React.createClass({
               {this.props.name}
             </p>
           </div>
-          <div className={this.getClasses("col-xs-3")}>
-            <p>{this.props.lastMonthPoints}</p>
+          <div className={this.getClasses("col-xs-3 recentPoints")} data-value="recent" onClick={this.props.changeState}>
+            <p data-value="recent">{this.props.lastMonthPoints}</p>
           </div>
-          <div className={this.getClasses("col-xs-3")}>
-            <p>{this.props.totalPoints}</p>
+          <div className={this.getClasses("col-xs-3 allTimePoints active")} data-value="alltime" onClick={this.props.changeState}>
+            <p data-value="alltime">{this.props.totalPoints}</p>
           </div>
       </div>
     );
